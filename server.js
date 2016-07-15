@@ -1,5 +1,28 @@
 var express = require('express');
 var app = express();
+var mongojs = require('mongojs');
+
+
+// db layer
+// default to a 'localhost' configuration:
+var connection_string = '127.0.0.1:27017/appserver';
+// if OPENSHIFT env variables are present, use the available connection info:
+if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
+  connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +
+  process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +
+  process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
+  process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
+  process.env.OPENSHIFT_APP_NAME;
+}
+
+var db = mongojs(connection_string, ['rsvp']);
+//var rsvp = db.collection('rsvp');
+//db.insert({name: 'Spearow', type: 'flying'})
+
+db.rsvp.find({}).forEach(function(err, doc) {
+  if (err) throw err;
+  if (doc) { console.dir('Attendent - ', doc); }
+});
 
 
 //middleware
@@ -18,6 +41,14 @@ app.param('name', function(req, res, next, name) {
 app.get('/', function (req, res) {
   res.send('Welcome to my appserver!');
 });
+
+app.get('/api/vi/invites', function(req, res) {
+    db.rsvp.find({}).forEach(function(err, doc) {
+      if (err) throw err;
+      if (doc) {res.send(doc); }
+    });
+  
+})
 
 app.listen(process.env.OPENSHIFT_NODEJS_PORT || 80, process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1", function () {
   console.log('My app server listening on port 80!');
