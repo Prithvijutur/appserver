@@ -1,0 +1,7 @@
+node_modules
+.git
+npm-debug.log
+tmp
+dist
+public/uploads/*
+!public/uploads/.gitkeep
