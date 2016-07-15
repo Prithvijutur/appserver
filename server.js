@@ -16,8 +16,6 @@ if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
 }
 
 var db = mongojs(connection_string, ['rsvp']);
-//var rsvp = db.collection('rsvp');
-//db.insert({name: 'Spearow', type: 'flying'})
 
 db.rsvp.find({}).forEach(function(err, doc) {
   if (err) throw err;
@@ -57,5 +55,8 @@ app.listen(process.env.OPENSHIFT_NODEJS_PORT || 80, process.env.OPENSHIFT_NODEJS
 app.post('/api/v1/rsvp/:name', function(req, res) {
     var email = req.body.email;
     var name = req.name;
+    db.rsvp.insert({'name' : req.name,
+                    'email': email
+    });
     res.send(req.name + ' ' + email);
 });
