@@ -40,12 +40,16 @@ app.get('/', function (req, res) {
   res.send('Welcome to my appserver!');
 });
 
-app.get('/api/vi/invites', function(req, res) {
-    db.rsvp.find({}).forEach(function(err, doc) {
-      if (err) throw err;
-      if (doc) {res.send(doc); }
+app.get('/api/v1/invites', function(req, res) {
+    db.rsvp.find( function(err, docs) {
+      if (err) {
+        res.send(err);
+        throw err;
+      }
+      if (docs) {
+        res.send(docs); 
+      }
     });
-  
 })
 
 app.listen(process.env.OPENSHIFT_NODEJS_PORT || 80, process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1", function () {
